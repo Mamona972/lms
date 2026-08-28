@@ -1,11 +1,8 @@
-
 import type { Metadata } from "next";
 import "./globals.css";
-import {Poppins} from "next/font/google";
-import { Josefin_Sans } from "next/font/google";
-import { ThemeProvider } from "./utils/theme-provider";
-import { Toaster } from "react-hot-toast";
-import {Providers} from "./Provider"
+import { Poppins, Josefin_Sans } from "next/font/google";
+import { Providers } from "./Provider";
+import Custom from "./Custom";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -23,28 +20,25 @@ export const metadata: Metadata = {
   title: "Elearning",
   description:
     "Elearning is a platform for students to learn and get help from teachers",
-  keywords: [
-    "Programming",
-    "MERN",
-    "Redux",
-    "Machine Learning",
-  ],
+  keywords: ["Programming", "MERN", "Redux", "Machine Learning"],
 };
 
-
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html
       lang="en"
-      className={`${poppins.variable} ${josefin.variable} h-full antialiased  `}
+      className={`${poppins.variable} ${josefin.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col !bg-white bg-no-repeat dark:bg-gradient-to-b dark:from-gray-900 dark:to-black duration-300 ">
+      <body className="min-h-full flex flex-col !bg-white bg-no-repeat dark:bg-gradient-to-b dark:from-gray-900 dark:to-black duration-300">
         <Providers>
-          <ThemeProvider attribute='class' defaultTheme="system" enableSystem>
-          {children}
-          <Toaster position="top-center" reverseOrder={false} />
-        </ThemeProvider>
-          </Providers>
+          <Custom>
+           {children}
+          </Custom>
+        </Providers>
       </body>
     </html>
   );

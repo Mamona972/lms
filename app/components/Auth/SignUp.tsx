@@ -1,9 +1,12 @@
-import React, {FC, useState } from "react"
+'use client'
+import React, {FC, useEffect, useState } from "react"
 import {useFormik} from "formik"
 import * as Yup from "yup"
 import {AiOutlineEye, AiOutlineEyeInvisible, AiFillGithub} from "react-icons/ai"
 import {FcGoogle} from "react-icons/fc"
 import { styles } from "../../styles/style"
+import { useRegisterMutation } from "@/redux/features/auth/authApi"
+import toast from "react-hot-toast"
 
 type Props ={
     setRoute: (route:string) => void;
@@ -17,12 +20,30 @@ const schema = Yup.object().shape({
  
 const SignUp:FC<Props> =({setRoute})=>{
     const [show, setShow]= useState(false)
-    
+    const [register, {data,isSuccess,error}] = useRegisterMutation();
+
+    useEffect(()=>{
+       if(isSuccess) {
+        const message= data?.message || "Registration successful";
+        toast.success(message);
+        setRoute("Verification")
+       }
+       if(error){
+        if("data" in error){
+            const errorData= error as any;
+            toast.error(errorData.data.message);
+        }
+       }
+    }, [isSuccess,error,data,setRoute])
+
     const formik= useFormik({
         initialValues:{name:"",email:"",password:""},
         validationSchema:schema,
-        onSubmit: async({email,password})=>{
-            setRoute("Verification")
+        onSubmit: async({name,email,password})=>{
+           const data={
+            name,email,password
+           };
+           await register(data);
         }
     });
 
@@ -78,7 +99,7 @@ const SignUp:FC<Props> =({setRoute})=>{
             </label>
             <input type={!show ? "password": "text"}
             name="password"
-            value={values.email}
+            value={values.password}
             onChange={handleChange}
             id="password"
             placeholder="password!23"
@@ -88,13 +109,13 @@ const SignUp:FC<Props> =({setRoute})=>{
             />
             {!show ? (
                 <AiOutlineEyeInvisible
-                  className="absolute bottom-3 right-2 z-1 cursor-pointer"
+                  className="absolute bottom-3 right-2 z-1 cursor-pointer dark:text-white"
                   size={20}
                   onClick={()=> setShow(true)}
                 />
             ):(
             <AiOutlineEye
-            className="absolute bottom-3 right-2 z-1 cursor-pointer"
+            className="absolute bottom-3 right-2 z-1 cursor-pointer dark:text-white"
                   size={20}
                   onClick={()=> setShow(true)}
             />
@@ -104,6 +125,7 @@ const SignUp:FC<Props> =({setRoute})=>{
                 errors.password && touched.password && (
                     <span className="border-red-500 pt-2 block ">{errors.password}</span>
                 ) } 
+                
              <div className="w-full mt-5">
                <input type="submit" value="Sign Up" 
                className={`${styles.button}`}
