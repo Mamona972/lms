@@ -4,8 +4,9 @@ import React, { FC, useEffect, useState } from "react";
 import avatarIcon from "../../../public/assets/avatar.jpg";
 import { AiOutlineCamera } from "react-icons/ai";
 import { styles } from "../../styles/style";
-import { useUpdateAvatarMutation } from "@/redux/features/user/userApi";
+import { useEditProfileMutation, useUpdateAvatarMutation } from "@/redux/features/user/userApi";
 import { useLoadUserQuery } from "@/redux/features/api/apiSlice";
+import toast from "react-hot-toast";
 
 type Props = {
   avatar: string | null;
@@ -16,6 +17,7 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
   const [scroll, setScroll] = useState(false);
   const [name, setName] = useState(user && user.name);
   const [updateAvatar, { isSuccess, error }] = useUpdateAvatarMutation();
+  const [editProfile, {isSuccess:success ,error:updateError}] = useEditProfileMutation();
   const [loadUser, setLoadUser]= useState(false);
   const {} = useLoadUserQuery(undefined, {skip: loadUser ? false : true})
 
@@ -49,16 +51,24 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
 };
 
   useEffect(()=>{
-     if(isSuccess){
+     if(isSuccess || success){
         setLoadUser(true)
      }
-     if(error){
+     if(error || updateError){
         console.log(error)
      }
-  },[isSuccess,error])
+     if(success){
+      toast.success("Profile updated successfully")
+     }
+  },[isSuccess,error, success, updateError])
 
   const handleSubmit = async (e: any) => {
-    console.log("submit");
+    e.preventDefault();
+    if(name !== ""){
+      await editProfile({
+        name:name,
+      });
+    }
   };
 
   if (typeof window !== "undefined") {
@@ -127,7 +137,7 @@ const ProfileInfo: FC<Props> = ({ avatar, user }) => {
             </div>
 
             <input
-              className={`${styles.button} mt-8 mb-8`}
+            className={`w-[95%] h-[40px] border border-[#37a39a] text-center text-black dark:text-[#fff] rounded-[3px] mt-8 cursor-pointer`}
               required
               value="Update"
               type="submit"

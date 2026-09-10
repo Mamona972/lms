@@ -31,9 +31,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${poppins.variable} ${josefin.variable} h-full antialiased`}
+      className={`${poppins.variable} ${josefin.variable} min-h-screen antialiased !bg-white bg-no-repeat dark:bg-gradient-to-b dark:from-gray-900 dark:to-black duration-300`}
     >
-      <body className="min-h-full flex flex-col !bg-white bg-no-repeat dark:bg-gradient-to-b dark:from-gray-900 dark:to-black duration-300">
+      <body className="min-h-screen flex flex-col ">
         <Providers>
           <Custom>
            {children}
